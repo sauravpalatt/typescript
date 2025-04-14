@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Add Student</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-top: 50px;
+      font-size: 2.5rem;
+      color: #2c3e50;
+    }
+
+    .form-container {
+      width: 50%;
+      max-width: 600px;
+      margin-top: 30px;
+      padding: 30px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    input {
+      padding: 12px 16px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #2980b9;
+      outline: none;
+    }
+
+    button {
+      padding: 12px;
+      font-size: 1rem;
+      background-color: #2980b9;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1c5980;
+    }
+  </style>
+</head>
+<body>
+  <h1>Add Student</h1>
+  <div class="form-container">
+    <form id="student-form">
+      <input name="name" id="name" placeholder="Name" required />
+      <input name="age" id="age" type="number" placeholder="Age" required />
+      <input name="job" id="job" placeholder="Job" required />
+      <button type="submit">SUBMIT</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('student-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const age = document.getElementById('age').value;
+      const job = document.getElementById('job').value;
+
+      try {
+        const res = await fetch('/addStudent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, age, job })
+        });
+
+        if (!res.ok) throw new Error('Failed to add student');
+
+        Swal.fire({
+        title: 'Success!',
+        text: 'Student added successfully.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      }).then(() => {
+        window.location.href = '/'; 
+      });
+    } catch (err) {
+      
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to add student. Please try again.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    }
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

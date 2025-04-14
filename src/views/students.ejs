@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student List</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 2.5rem;
+      color: #2c3e50;
+    }
+
+    .container {
+      width: 60%;
+      max-width: 900px;
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 12px;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 12px 20px;
+      font-size: 15px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    tbody tr {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+    }
+
+    tbody td {
+      padding: 16px 20px;
+      font-size: 15px;
+      color: #333;
+    }
+
+    tbody tr td:first-child {
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+
+    tbody tr td:last-child {
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .button-group button {
+      padding: 6px 12px;
+      font-size: 0.95rem;
+      background-color: #2980b9;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .button-group button:hover {
+      background-color: #1c5980;
+    }
+
+    .add-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      background-color: #2980b9;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .add-button:hover {
+      background-color: #1c5980;
+    }
+
+    .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  text-align: center;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 15px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.modal-content button {
+  padding: 10px 16px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.modal-content button[type="submit"] {
+  background-color: #2980b9;
+  color: white;
+}
+
+.modal-content button[type="button"] {
+  background-color: #bdc3c7;
+  color: white;
+}
+
+  </style>
+</head>
+<body>
+  <!-- Add Student Button -->
+  <button class="add-button" onclick="window.location.href='/addstudent'">Add Student</button>
+
+  <div class="container">
+    <center><h1>STUDENT MANAGEMENT</h1></center>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Job</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% students.forEach(student => { %>
+          <tr>
+            <td><strong><%= student.name %></strong></td>
+            <td><%= student.age %></td>
+            <td><%= student.job %></td>
+            <td>
+              <div class="button-group">
+                <button onclick="openModal('<%= student._id %>', '<%= student.name %>', '<%= student.age %>', '<%= student.job %>')">Edit</button>
+                <button onclick="confirmDelete('<%= student._id %>')">Delete</button>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <div id="editModal" style="display:none;" class="modal-overlay">
+      <div class="modal-content">
+        <h2>Edit Student</h2>
+        <form id="editForm">
+          <input type="hidden" id="editId" />
+          <input type="text" id="editName" placeholder="Name" required />
+          <input type="number" id="editAge" placeholder="Age" required />
+          <input type="text" id="editJob" placeholder="Job" required />
+          <button type="submit">Save Changes</button>
+          <button type="button" onclick="closeModal()">Cancel</button>
+        </form>
+      </div>
+    </div>
+
+      <script>
+        function openModal(id, name, age, job) {
+          document.getElementById('editId').value = id;
+          document.getElementById('editName').value = name;
+          document.getElementById('editAge').value = age;
+          document.getElementById('editJob').value = job;
+          document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+          document.getElementById('editModal').style.display = 'none';
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const id = document.getElementById('editId').value;
+          const name = document.getElementById('editName').value;
+          const age = document.getElementById('editAge').value;
+          const job = document.getElementById('editJob').value;
+
+          try {
+            const res = await fetch(`/editstudent/${id}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ name, age, job })
+            });
+
+            if (!res.ok) throw new Error('Failed to update student');
+            closeModal();
+            Swal.fire({
+              icon: 'success',
+              title: 'Updated!',
+              text: 'Student information has been updated successfully.',
+              timer: 2000,
+              showConfirmButton: false
+            }).then(() => {
+            window.location.reload();
+            });
+
+        } catch (err) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            text: 'Failed to update student. Please try again.',
+          });
+        }
+        });
+    </script>
+    <script>
+      function confirmDelete(id) {
+          Swal.fire({
+            title: 'Are you sure?',
+            text: "This student will be permanently deleted.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!'
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              try {
+                const res = await fetch(`/deletestudent/${id}`, {
+                  method: 'DELETE'
+                });
+
+                if (!res.ok) throw new Error('Failed to delete student');
+
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Deleted!',
+                  text: 'Student has been deleted.',
+                  timer: 2000,
+                  showConfirmButton: false
+                }).then(() => {
+                  window.location.reload();
+                });
+              } catch (err) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Failed to delete student.'
+              });
+             }  
+          }
+        });
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </div>
+</body>
+</html>
