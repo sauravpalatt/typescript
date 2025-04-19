@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import {Student} from '../models/student.model'; // ✅ Check this path
+import {Student} from '../models/student.model'; 
 
 export const getAllStudents = async (req: Request, res: Response) => {
   try {
-    const students = await Student.find(); // ✅ Fetch from MongoDB
-    res.render('students', { students });  // ✅ Pass it to EJS
+    const students = await Student.find(); 
+    res.render('students', { students });  
   } catch (error) {
     console.error("ERROR LOADING STUDENTS", error);
     res.status(500).send("Internal Server Error");
